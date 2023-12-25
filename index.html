@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    *{
+      padding: 0;
+      margin: 0;
+    }
+    body {
+      text-align: center;
+      background-color: black;
+    }
+    h1,
+    h3{
+      color: #ffff;
+    }
+    .tags,
+    .generate-button{
+      width: 20vw;
+      height: 5vh;
+      font-size: 1em;
+      text-align: center;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+    .image img{
+      height: 80vh;
+      margin-top: 2vh;
+    }
+  </style>
+</head>
+<body>
+  <h1>Anime Image Generator</h1>
+  <h3>Select your type and Hit Generate</h3>
+  <select class="tags">
+  <!-- <option value="">first</option>
+  <option value="">second</option> -->
+  
+  </select>
+  <button class="generate-button">GenerateImage</button>
+    <div class="image">
+      <!-- <img src="https://cdn.waifu.im/6607.jpeg" alt=""> -->
+    </div>
+    
+
+
+  <script>
+    let data;
+    let finalURL;
+    let tagName = document.querySelector('.tags').value;
+    const tagsURL = "https://api.waifu.im/tags";
+    const URL="https://api.waifu.im/search?included_tags=";
+    
+    getPics();
+    async function getPics(){
+      let responseTags = await fetch(tagsURL);
+      let allTags=await responseTags.json();
+      
+      let normalTags = allTags.versatile;
+      let nsfwTags = allTags.nsfw;
+      let finalTags = normalTags;
+      // console.log(finalTags)
+      for(let i of finalTags){
+        document.querySelector(".tags").innerHTML += `<option value="${i}">${i}</option>`;
+      }
+      getTagValue();
+
+      document.querySelector('.tags').addEventListener('change',()=>{
+        getTagValue();
+      });
+
+      function getTagValue(){
+      tagName = document.querySelector('.tags').value;
+      finalURL = URL+tagName;
+      
+      }
+
+      async function getPicsData(){
+      let responseData = await fetch(finalURL);
+      console.log(responseData);
+      data = await responseData.json();
+      console.log(data);
+      console.log(data.images[0].url)
+
+        let bodyElement = document.querySelector(".image")
+        bodyElement.innerHTML = `<img src="${data.images[0].url}" alt="">`
+      }
+      getPicsData();
+      document.querySelector(".generate-button").addEventListener("click",()=>{getTagValue(); getPicsData();});
+    }
+    
+    
+  </script>
+</body>
+</html>
